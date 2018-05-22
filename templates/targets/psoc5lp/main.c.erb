@@ -1,0 +1,111 @@
+#include "project.h"
+#include "<%= c_lib_dir %>/mrubyc.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "<%= c_lib_dir>/<%= prefix %>_main_loop.c"
+#include "<%= c_lib_dir>/<%= prefix %>_sub_loop.c"
+#include "<%= c_lib_dir>/<%= prefix %>_operation.c"
+
+#define MEMORY_SIZE (1024*40)
+static uint8_t memory_pool[MEMORY_SIZE];
+
+/*
+  Strongly recommended seeing <%= c_lib_dir %>/value.h to know
+  how to pass variables
+*/
+
+/* sample function of Fixnum */
+static void c_Fixnum(mrb_vm *vm, mrb_value *v, int argc){
+  uint8 fixnum = GET_INT_ARG(1);
+  /* C int can be returned as it is */
+  SET_INT_RETURN(fixnum);
+}
+
+/* sample function of String */
+static void c_String(mrb_vm *vm, mrb_value *v, int argc){
+  char *string = GET_STRING_ARG(1);
+  /* C char* should be converted into mruby String */
+  mrb_value mrb_string = mrbc_string_new_cstr(vm, string);
+  SET_RETURN(mrb_string);
+}
+
+/* sample function of Array */
+static void c_Array(mrb_vm *vm, mrb_value *v, int argc){
+  /* convert mruby Array into C array */
+  mrb_value mrb_array = GET_ARY_ARG(1);
+  uint8 length = GET_INT_ARG(2);
+  uint8 array[length];
+  for( int i = 0; i < length; i++ ) {
+    mrb_value value = mrbc_array_get(&mrb_array, i);
+    array[i] = value.i;
+  }
+  /* convert vice versa */
+  mrb_value mrb_array = mrbc_array_new(vm, length);
+  for( int i = 0; i < length; i++ ) {
+    mrb_value value = mrb_fixnum_value(array[i]);
+    mrbc_array_set( &mrb_array, i, &value );
+  }
+  SET_RETURN(mrb_array);
+}
+
+//================================================================
+/*! DEBUG PRINT
+*/
+static void c_debugprint(mrb_vm *vm, mrb_value *v, int argc){
+  void pqall(void);
+  for( int i = 0; i < 79; i++ ) {
+    console_putchar('=');
+  }
+  console_putchar('\n');
+  pqall();
+  int total, used, free, fragment;
+  mrbc_alloc_statistics( &total, &used, &free, &fragment );
+  console_printf("Memory total:%d, used:%d, free:%d, fragment:%d\n", total, used, free, fragment );
+  unsigned char *key = GET_STRING_ARG(1);
+  unsigned char *value = GET_STRING_ARG(2);
+  console_printf("%s:%s\n", key, value );
+}
+
+//================================================================
+/*! HAL
+*/
+int hal_write(int fd, const void *buf, int nbytes){
+  UART_DEBUG_PutArray( buf, nbytes );
+  return nbytes;
+}
+int hal_flush(int fd){
+  return 0;
+}
+
+//================================================================
+/*! timer inturuption handler
+*/
+CY_ISR(isr){
+  mrbc_tick();
+}
+
+void StartPeriferals(void) {
+  UART_DEBUG_Start(); // you need to create UART_DEBUG to see debug print
+  /* add your periferal starter */
+}
+
+int main(void) {
+  CyGlobalIntEnable; /* Enable global interrupts. */
+  mrbc_init(memory_pool, MEMORY_SIZE);
+  StartPeriferals();
+
+  mrbc_define_method(0, mrbc_class_object, "debugprint", c_debugprint);
+
+  mrbc_define_method(0, mrbc_class_object, "w_Fixnum", c_Fixnum);
+  mrbc_define_method(0, mrbc_class_object, "w_String", c_String);
+  mrbc_define_method(0, mrbc_class_object, "w_Array", c_Array);
+
+  mrbc_create_task( <%= prefix %>_main_loop, 0 );
+  mrbc_create_task( <%= prefix %>_sub_loop, 0 );
+  mrbc_create_task( <%= prefix %>_operation, 0 );
+  mrbc_run();
+
+  return 0;
+}
+

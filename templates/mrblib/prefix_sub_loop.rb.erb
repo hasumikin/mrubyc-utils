@@ -1,0 +1,19 @@
+while !$mutex
+  relinquish()
+end
+
+debugprint('start', 'sub_loop')
+
+while true
+  sleep 10
+  $mutex.lock()
+  debugprint('$mutex', 'lock')
+  sleep 1
+  debugprint('notice', 'main_loop will stop while sub_loop is locking $mutex')
+  sleep 1
+  debugprint('Array from sub_loop', w_Array)
+  sleep 10
+  debugprint('$mutex', 'unlock')
+  $mutex.unlock()
+end
+
