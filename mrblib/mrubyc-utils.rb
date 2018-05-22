@@ -1,7 +1,30 @@
 def __main__(argv)
-  if argv[1] == "version"
-    puts "v#{MrubycUtils::VERSION}"
-  else
-    puts "Hello World"
+  opts = Getopts.getopts('vhc', 'version', 'help', 'class:')
+
+  # バージョンを表示
+  if opts['v'] || opts['version']
+    puts "mrubyc-utils #{MrubycUtils::VERSION}"
+    return
   end
+
+  # 使い方を表示
+  if opts['h'] || opts['help']
+    MrubycUtils.usage
+    return
+  end
+
+  # 引数を処理
+  case argv[1]
+  when 'install'
+    return MrubycUtils.install
+  when 'update'
+    return MrubycUtils.update
+  when 'classes'
+    return MrubycUtils.classes
+  when 'methods'
+    klass = opts['c'] || opts['class']
+    return MrubycUtils.methods(klass)
+  end
+
+  MrubycUtils.usage
 end
