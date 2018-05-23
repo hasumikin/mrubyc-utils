@@ -24,6 +24,8 @@ def __main__(argv)
   when 'methods'
     klass = opts['c'] || opts['class']
     return MrubycUtils.methods(klass)
+  when 'compile'
+    return MrubycUtils.compile(false)
   end
 
   MrubycUtils.usage
