@@ -1,12 +1,18 @@
-def w_Fixnum
-  123
+$num = 0
+def fixnum_sample
+  $num = w_FixnumAdd($num)
+  return $num
 end
 
-def w_String
-  'abc'
+$str = ' ' # ' ' == 0x20(white space)
+def string_sample
+  $str = w_StringShift($str)
+  return '"' + $str + '"'
 end
 
-def w_Array
-  [0x00, 0x01, 0x02]
+def array_sample
+  ary = w_ArrayAsItIs([10001, 10002, 10003], 3)
+  index = $num % 3
+  return 'ary[' + index.to_s + '] : ' + ary[index].to_s
 end
 
