@@ -5,7 +5,10 @@ def gem_config(conf)
   conf.gem :mgem => 'mruby-yaml'
   conf.gem :mgem => 'mruby-httprequest'
   conf.gem :github => 'iij/mruby-dir'
-  conf.gem :github => 'mattn/mruby-onig-regexp'
+  conf.gem :github => 'iij/mruby-digest'
+  #conf.gem :github => 'masamitsu-murase/mruby-hs-regexp'
+  #conf.gem :github => 'mattn/mruby-onig-regexp'
+  conf.gem :github => 'iij/mruby-regexp-pcre'
 
   # be sure to include this gem (the cli app)
   conf.gem File.expand_path(File.dirname(__FILE__))
@@ -21,12 +24,12 @@ MRuby::Build.new do |conf|
   gem_config(conf)
 end
 
-#MRuby::Build.new('x86_64-pc-linux-gnu') do |conf|
-#  toolchain :gcc
-#
-#  gem_config(conf)
-#end
-#
+MRuby::Build.new('x86_64-pc-linux-gnu') do |conf|
+  toolchain :gcc
+
+  gem_config(conf)
+end
+
 #MRuby::CrossBuild.new('i686-pc-linux-gnu') do |conf|
 #  toolchain :gcc
 #
@@ -51,7 +54,7 @@ end
 #
 #  gem_config(conf)
 #end
-#
+
 #MRuby::CrossBuild.new('i386-apple-darwin14') do |conf|
 #  toolchain :clang
 #

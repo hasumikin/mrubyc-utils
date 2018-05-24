@@ -12,7 +12,7 @@ Usage: mrubyc-utils COMMAND [ARGS]
                 mruby/c's virtual machine.
  methods        Show all the methods that are available
                 in each classes of mruby/c.
-  -c | --class    [optional] You can specify class name
+  -c | --class    [required] You have to specify class name
  compile        Compile your mruby source into C byte code.
   -w | --watch    [optional] Monitoring loop runs and it will
                   compile mruby source every time you save.
