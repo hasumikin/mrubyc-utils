@@ -7,7 +7,7 @@ module MrubycUtils
         puts "WARN - skippeng copy because '#{from}' does not exist"
         return false
       end
-      puts "WARN - '#{to}' will be overwritten" if File.exists?(to)
+      puts "INFO - '#{to}' will be overwritten" if File.exists?(to)
       File.open(from) do |f_from|
         File.open(to, 'w') do |f_to|
           f_to.puts f_from.read
