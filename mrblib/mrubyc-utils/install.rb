@@ -59,7 +59,7 @@ module MrubycUtils
         print 'continue to install? (yes/no): '
         answer = gets.chomp
         break if (YES + NO).include?(answer)
-        puts 'You shold type exactly `yes`.' if OBSCURITY.include?(answer)
+        puts 'You should type exactly `yes`.' if OBSCURITY.include?(answer)
       end
       return true if YES.include?(answer)
       return false if NO.include?(answer)
@@ -72,24 +72,6 @@ module MrubycUtils
       end
       `git clone https://github.com/mrubyc/mrubyc.git #{config['mrubyc_repo_dir']}`
       return true
-    end
-
-    def copy_mrubyc_to_src(config)
-      [ "#{config['mrubyc_repo_dir']}/src",
-        "#{config['mrubyc_repo_dir']}/src/hal_#{config['target']}" ].each do |src|
-        Dir.foreach(src) do |filename|
-          next if ['.', '..'].include?(filename)
-          from = "#{src}/#{filename}"
-          next if File.directory?(from)
-          to = "#{config['mrubyc_src_dir']}/#{filename}"
-          if NO_OVERWRITES.include?(filename) && File.exist?(to)
-            puts "WARM - skip copying #{from} because #{to} exists"
-            next
-          end
-          cp(from, to)
-        end
-        mkdir("#{config['mrubyc_src_dir']}/hal")
-      end
     end
 
     def create_mrubyc_src_dir(config)
