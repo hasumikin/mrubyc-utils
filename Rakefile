@@ -1,15 +1,16 @@
 require 'fileutils'
 
-MRUBY_VERSION="1.2.0"
+MRUBY_VERSION="1.3.0"
 
 file :mruby do
   #sh "git clone --depth=1 https://github.com/mruby/mruby"
-  sh "curl -L --fail --retry 3 --retry-delay 1 https://github.com/mruby/mruby/archive/1.2.0.tar.gz -s -o - | tar zxf -"
-  FileUtils.mv("mruby-1.2.0", "mruby")
+  sh "curl -L --fail --retry 3 --retry-delay 1 https://github.com/mruby/mruby/archive/1.3.0.tar.gz -s -o - | tar zxf -"
+  FileUtils.mv("mruby-1.3.0", "mruby")
 end
 
 APP_NAME=ENV["APP_NAME"] || "mrubyc-utils"
 APP_ROOT=ENV["APP_ROOT"] || Dir.pwd
+APP_VERSION='0.0.1'
 # avoid redefining constants in mruby Rakefile
 mruby_root=File.expand_path(ENV["MRUBY_ROOT"] || "#{APP_ROOT}/mruby")
 mruby_config=File.expand_path(ENV["MRUBY_CONFIG"] || "build_config.rb")
@@ -68,4 +69,39 @@ task :test => ["test:mtest", "test:bintest"]
 desc "cleanup"
 task :clean do
   sh "rake deep_clean"
+end
+
+desc "generate a release tarball"
+task :release => :compile do
+  require 'tmpdir'
+
+  Dir.chdir(mruby_root) do
+    # since we're in the mruby/
+    release_dir  = "releases/v#{APP_VERSION}"
+    release_path = Dir.pwd + "/../#{release_dir}"
+    app_name     = "#{APP_NAME}-#{APP_VERSION}"
+    FileUtils.mkdir_p(release_path)
+
+    Dir.mktmpdir do |tmp_dir|
+      Dir.chdir(tmp_dir) do
+        MRuby.each_target do |target|
+          next if name == "host"
+
+          arch = name
+          bin  = "#{build_dir}/bin/#{exefile(APP_NAME)}"
+          FileUtils.mkdir_p(name)
+          FileUtils.cp(bin, name)
+
+          Dir.chdir(arch) do
+            arch_release = "#{app_name}-#{arch}"
+            puts "Writing #{release_dir}/#{arch_release}.tgz"
+            `tar czf #{release_path}/#{arch_release}.tgz *`
+          end
+        end
+
+        puts "Writing #{release_dir}/#{app_name}.tgz"
+        `tar czf #{release_path}/#{app_name}.tgz *`
+      end
+    end
+  end
 end
