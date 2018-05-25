@@ -16,8 +16,11 @@ def __main__(argv)
   when '-h', '--help'
     MrubycUtils.usage
     return
+  else
+    puts 'Invalid argument. see --help'
+    puts opts
+    return 1
   end
-  # puts opts
 
   if (opts.is_a?(Hash) && opts.has_key?('?')) || opts == false
     puts 'Invalid argument. see --help'
@@ -25,7 +28,7 @@ def __main__(argv)
   end
 
   # 引数を処理
-  result = case argv[1]
+  return case argv[1]
   when 'install'
     MrubycUtils.install
   when 'update'
@@ -43,17 +46,10 @@ def __main__(argv)
     end
     MrubycUtils.compile(mode)
   else
-    nil
+    puts 'ERROR - unknown error'
+    puts opts
+    false
   end
 
-  case result
-  when true
-    return
-  when false
-    puts 'abort'
-    return 1
-  end
-
-  puts 'Invalid argument. see --help'
 end
 
