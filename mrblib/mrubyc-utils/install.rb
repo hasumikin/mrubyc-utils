@@ -96,7 +96,7 @@ module MrubycUtils
         { from: 'mrblib/prefix_sub_loop.rb.erb', to: "#{mruby_lib_dir}/#{prefix}_sub_loop.rb" },
         { from: 'mrblib/prefix_operations.rb.erb', to: "#{mruby_lib_dir}/#{prefix}_operations.rb" }
       ].each do |template|
-        url = sprintf("https://%s/%s/%s", 'raw.githubusercontent.com', 'hasumon/mrubyc-utils/master/templates', template[:from])
+        url = sprintf("https://%s/%s/%s", 'raw.githubusercontent.com', 'hasumikin/mrubyc-utils/master/templates', template[:from])
         puts "INFO - download #{url}"
         request = http.get(url, {})
         if request.code != 200
