@@ -1,11 +1,11 @@
 #include "project.h"
-#include <%= c_lib_dir %>/mrubyc.h"
+#include "<%= mrubyc_src_dir %>/mrubyc.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <%= c_lib_dir %>/<%= prefix %>_operations.c"
-#include <%= c_lib_dir %>/<%= prefix %>_main_loop.c"
-#include <%= c_lib_dir %>/<%= prefix %>_sub_loop.c"
+#include "<%= c_lib_dir %>/<%= prefix %>_operations.c"
+#include "<%= c_lib_dir %>/<%= prefix %>_main_loop.c"
+#include "<%= c_lib_dir %>/<%= prefix %>_sub_loop.c"
 
 #define MEMORY_SIZE (1024*40)
 static uint8_t memory_pool[MEMORY_SIZE];
@@ -26,7 +26,7 @@ static void c_FixnumAdd(mrb_vm *vm, mrb_value *v, int argc){
 static void c_StringShift(mrb_vm *vm, mrb_value *v, int argc){
   char *string = GET_STRING_ARG(1);
   if (string[0] < 0x7f) {
-  [MaÚ  string[0] = string[0] + 1;
+    string[0] = string[0] + 1;
   } else {
     string[0] = 0x20;
   }
@@ -58,10 +58,8 @@ static void c_ArrayAsItIs(mrb_vm *vm, mrb_value *v, int argc){
 /*! DEBUG PRINT
 */
 static void c_debugprint(mrb_vm *vm, mrb_value *v, int argc){
-  void pqall(void);
   for( int i = 0; i < 79; i++ ) { console_putchar('='); }
   console_putchar('\n');
-  pqall();
   int total, used, free, fragment;
   mrbc_alloc_statistics( &total, &used, &free, &fragment );
   console_printf("Memory total:%d, used:%d, free:%d, fragment:%d\n", total, used, free, fragment );
