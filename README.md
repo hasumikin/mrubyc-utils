@@ -18,11 +18,13 @@ mrubyc-utils assumes that you are using PSoC Creator to write firmware program a
 
 Though PSoC Creator works on only Windows platform, mrubyc-utils works on Linux and macOS. It is recommneded that you use Windows as a host machine to build firmware and Linux as a virtual client to write mruby code. Vice versa you can use Linux or macOS as a host to write mruby and Windows as a virtual client to build firmware with PSoC Creator.
 
-### Linux and macOS
-- git
+### Linux or macOS
+- git (mrubyc-utils uses git internally to clone mruby/c into your project directory)
+- mruby 1.3.0 (mrubyc-utils uses mrbc to compile your mruby program)
+- your favorite text editor (to write mruby program)
 
-### Windows(out of scope as of yet)
-- git.exe[TBD]
+### Windows
+- PSoC Creator 4.2 or later (to build PSoC project and to write firmware to your microcontroller)
 
 ## Usage
 - hitting `mrubyc install` in your mruby/c project's directory will check out mruby/c repository from GitHub.com and create some files and directories. Note that this operation may overwrite main.c. See standard output to know more about its result
@@ -34,7 +36,8 @@ Though PSoC Creator works on only Windows platform, mrubyc-utils works on Linux 
 - `mrubyc --help` will show you more about usage
 
 ## Install
-[TBD]
+- get binary from [release page](https://github.com/hasumikin/mrubyc-utils/releases)
+- add a PATH to the binary
 
 ## Contribution
 1. Fork this repository
@@ -49,5 +52,5 @@ MIT(see LICENSE)
 
 ## Author
 
-[hasumon](https://github.com/hasumon)
+[hasumkin](https://github.com/hasumikin)
 
