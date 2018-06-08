@@ -34,11 +34,11 @@ Episode 1 - Run the template
 ![](/images/tutorials/1/ide_5.png)
 
 ### Arrange peripherals
-- Drug and drop [Communications > *UART*] into TopDesign.cysch pane
+- drug and drop [Communications > UART] into TopDesign.cysch pane
   - this UART will work as debug console
 ![](/images/tutorials/1/uart.png)
 
-- Drug and drop [System > *Interrupt*] and [System > Clock] as well
+- drug and drop [System > Interrupt] and [System > Clock] as well
 - connect `isr_1` and `Clock_1`
 ![](/images/tutorials/1/isr_clock.png)
 
@@ -46,14 +46,14 @@ Episode 1 - Run the template
   - interrupt and clock will work as hardware timer so that `#sleep` method works properly
 
 ### Assign pins
-- Double click [Pins] in Workspace Explorer on the left side of window
-- assign `Rx_1` to P12[6] and `Tx_1` to P12[7]
+- double click [Pins] in Workspace Explorer on the left side of window
+- assign `Rx_1` to `P12[6]` and `Tx_1` to `P12[7]`
   - you cannot change this assignment as long as you use PSoC5LP Prototyping Kit because P12[6] and P12[7] are connected to USB terminal internally
   - you can ignore this restriction if you do some electric work. this tutorial will not cover it though
 ![](/images/tutorials/1/pin_assignment.png)
 
 ## Install mruby/c and templates with mrubyc-utils on Linux/macOS
-- quite easy
+quite easy:
 ```
 $ cd path/to/mrubyc_tutorial.cydsn
 ```
@@ -79,7 +79,7 @@ $ mrubyc-utils compile
 ```
 all the `mrblib/job_xxx.rb` will be compiled into `src/job_xxx.c`
 
-before this, you may have to specify mrbc version in case of using rbenv like
+before this, you may have to specify mrbc version in case of using rbenv like:
 ```
 $ echo 'mruby-1.3.0' > .ruby-version
 ```
@@ -97,4 +97,4 @@ $ echo 'mruby-1.3.0' > .ruby-version
 - it works perfectly if you get outtput like this image
 ![](/images/tutorials/1/teraterm.png)
 
-- you can easily understand what happens to see `job_xxx.rb` files is you are Rubyist :)
+- you can easily understand what happens by seeing `job_xxx.rb` files if you are Rubyist :)
