@@ -103,13 +103,8 @@ module MrubycUtils
           puts "FATAL - template file '#{url}' was not found"
           raise RuntimeError
         end
-        erb = if File.extname(template[:to]) == '.c'
-          request.body.gsub(/\n/, "\r\n")
-        else
-          request.body
-        end
         File.open(template[:to], 'w') do |f|
-          f.puts erb_result(erb, config)
+          f.puts erb_result(request.body, config)
         end
         puts "INFO - saved #{template[:to]}"
       end
