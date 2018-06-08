@@ -39,6 +39,9 @@ Though PSoC Creator works on only Windows platform, mrubyc-utils works on Linux 
 - get binary from [release page](https://github.com/hasumikin/mrubyc-utils/releases)
 - add a PATH to the binary
 
+## Tutorial
+see TUTORIAL_1.md
+
 ## Contribution
 1. Fork this repository
 2. Create your feature branch (git checkout -b my-new-feature)

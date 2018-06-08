@@ -86,6 +86,7 @@ $ echo 'mruby-1.3.0' > .ruby-version
 
 ## Build and Run!
 - make sure microcontroller connects to USB port of Windows
+- [Debug > Program] will build project and install the firmware into your microcontroller. then it runs automatically
 
 ## See debug console
 - use PuTTY or TeraTerm or other terminal that can be valid as a serial com console
