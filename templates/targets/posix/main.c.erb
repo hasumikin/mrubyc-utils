@@ -1,5 +1,5 @@
-#include "project.h"
 #include "<%= mrubyc_src_dir %>/mrubyc.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,7 +8,7 @@
 #include "<%= c_lib_dir %>/<%= prefix %>_sub_loop.c"
 
 #define MEMORY_SIZE (1024*40)
-static uint8_t memory_pool[MEMORY_SIZE];
+static uint8_t my_memory_pool[MEMORY_SIZE];
 
 /*
   Strongly recommended seeing src/value.h to know
@@ -17,7 +17,7 @@ static uint8_t memory_pool[MEMORY_SIZE];
 
 /* sample function of passing Fixnum */
 static void c_FixnumAdd(mrb_vm *vm, mrb_value *v, int argc){
-  uint8 fixnum = GET_INT_ARG(1) + 1;
+  int fixnum = GET_INT_ARG(1) + 1;
   /* C int can be returned as it is */
   SET_INT_RETURN(fixnum);
 }
@@ -39,8 +39,8 @@ static void c_StringShift(mrb_vm *vm, mrb_value *v, int argc){
 static void c_ArrayAsItIs(mrb_vm *vm, mrb_value *v, int argc){
   /* convert mruby Array into C array */
   mrb_value mrb_array = GET_ARY_ARG(1);
-  uint8 length = GET_INT_ARG(2);
-  uint16 array[length];
+  int length = GET_INT_ARG(2);
+  int array[length];
   for( int i = 0; i < length; i++ ) {
     mrb_value value = mrbc_array_get(&mrb_array, i);
     array[i] = value.i;
@@ -70,34 +70,8 @@ static void c_debugprint(mrb_vm *vm, mrb_value *v, int argc){
   console_putchar('\n');
 }
 
-//================================================================
-/*! HAL
-*/
-int hal_write(int fd, const void *buf, int nbytes){
-  UART_1_PutArray( buf, nbytes );
-  return nbytes;
-}
-int hal_flush(int fd){
-  return 0;
-}
-
-//================================================================
-/*! timer inturuption handler
-*/
-CY_ISR(isr_1){
-  mrbc_tick();
-}
-
-void StartPeriferals(void) {
-  UART_1_Start(); // you need to create UART_1 to see debug print
-  isr_1_StartEx(isr_1);
-  /* add your periferal starter */
-}
-
 int main(void) {
-  CyGlobalIntEnable; /* Enable global interrupts. */
-  mrbc_init(memory_pool, MEMORY_SIZE);
-  StartPeriferals();
+  mrbc_init(my_memory_pool, MEMORY_SIZE);
 
   mrbc_define_method(0, mrbc_class_object, "debugprint", c_debugprint);
 
