@@ -99,3 +99,8 @@ $ echo 'mruby-1.3.0' > .ruby-version
 ![](/images/tutorials/1/teraterm.png)
 
 - you can easily understand what happens by seeing `job_xxx.rb` files if you are Rubyist :)
+
+## Next tutorial is
+- Run the same mruby/c program on your POSIX computer like Linux instead of microcontroller
+  - see TUTORIAL_2.md
+
