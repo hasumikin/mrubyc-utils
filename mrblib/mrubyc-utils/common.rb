@@ -16,9 +16,10 @@ module MrubycUtils
       puts "INFO - copied from '#{from}' to '#{to}'"
     end
 
-    def mkdir(dir)
+    def mkdir_p(dir)
+      return unless dir
       if !File.directory?(dir)
-        if !Dir.mkdir(dir)
+        if !Dir.mkdir_p(dir)
           puts "FATAL - failed to create directory: #{dir}"
           raise RuntimeError
         end
@@ -56,7 +57,7 @@ module MrubycUtils
           end
           cp(from, to)
         end
-        mkdir("#{config['mrubyc_src_dir']}/hal")
+        mkdir_p("#{config['mrubyc_src_dir']}/hal")
       end
     end
 

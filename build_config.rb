@@ -5,6 +5,7 @@ def gem_config(conf)
   conf.gem :mgem => 'mruby-yaml'
   conf.gem :mgem => 'mruby-httprequest'
   conf.gem :github => 'iij/mruby-dir'
+  conf.gem :github => 'mgi166/mruby-mkdir-p'
   conf.gem :github => 'iij/mruby-digest'
   #conf.gem :github => 'masamitsu-murase/mruby-hs-regexp'
   conf.gem :github => 'mattn/mruby-onig-regexp'
