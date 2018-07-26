@@ -1,0 +1,110 @@
+#include <stdio.h>
+
+// #include "freertos/FreeRTOS.h"
+// #include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_log.h"
+#include "esp_spi_flash.h"
+#include "nvs_flash.h"
+
+#include "mrubyc.h"
+
+#include "<%= prefix %>_main_loop.h"
+#include "<%= prefix %>_operations.h"
+#include "<%= prefix %>_sub_loop.h"
+
+#define MEMORY_SIZE (1024*30)
+
+static uint8_t memory_pool[MEMORY_SIZE];
+
+/* sample function of passing Fixnum */
+static void c_FixnumAdd(mrb_vm *vm, mrb_value *v, int argc){
+  int fixnum = GET_INT_ARG(1) + 1;
+  /* C int can be returned as it is */
+  SET_INT_RETURN(fixnum);
+}
+
+/* sample function of passing String */
+static void c_StringShift(mrb_vm *vm, mrb_value *v, int argc){
+  unsigned char *string = GET_STRING_ARG(1);
+  if (string[0] < 0x7f) {
+    string[0] = string[0] + 1;
+  } else {
+    string[0] = 0x20;
+  }
+  /* C char* should be converted into mruby String */
+  char str[1];
+  sprintf(str, "%c", string[0]);
+  mrb_value mrb_string = mrbc_string_new_cstr(vm, str);
+  SET_RETURN(mrb_string);
+}
+
+/* sample function of Array */
+static void c_ArrayAsItIs(mrb_vm *vm, mrb_value *v, int argc){
+  /* convert mruby Array into C array */
+  mrb_value mrb_array = GET_ARY_ARG(1);
+  int length = GET_INT_ARG(2);
+  int array[length];
+  for( int i = 0; i < length; i++ ) {
+    mrb_value value = mrbc_array_get(&mrb_array, i);
+    array[i] = value.i;
+  }
+  /* convert vice versa */
+  mrb_value mrb_new_array = mrbc_array_new(vm, length);
+  for( int i = 0; i < length; i++ ) {
+    mrb_value value = mrb_fixnum_value(array[i]);
+    mrbc_array_set( &mrb_new_array, i, &value );
+  }
+  SET_RETURN(mrb_new_array);
+}
+
+//================================================================
+/*! DEBUG PRINT
+*/
+void chip_info() {
+    /* Print chip information */
+    esp_chip_info_t chip_info;
+    esp_chip_info(&chip_info);
+    printf("This is ESP32 chip with %d CPU cores, WiFi%s%s, ",
+            chip_info.cores,
+            (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
+            (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
+
+    printf("silicon revision %d, ", chip_info.revision);
+
+    printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
+            (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+}
+
+static void c_debugprint(mrb_vm *vm, mrb_value *v, int argc){
+  for( int i = 0; i < 79; i++ ) { console_putchar('='); }
+  console_putchar('\n');
+  chip_info();
+  int total, used, free, fragment;
+  mrbc_alloc_statistics( &total, &used, &free, &fragment );
+  console_printf("Memory total:%d, used:%d, free:%d, fragment:%d\n", total, used, free, fragment );
+  unsigned char *key = GET_STRING_ARG(1);
+  unsigned char *value = GET_STRING_ARG(2);
+  console_printf("%s:%s\n", key, value );
+  heap_caps_print_heap_info(MALLOC_CAP_8BIT);
+  heap_caps_print_heap_info(MALLOC_CAP_32BIT);
+  for( int i = 0; i < 79; i++ ) { console_putchar('='); }
+  console_putchar('\n');
+}
+
+void app_main(void) {
+  nvs_flash_init();
+  mrbc_init(memory_pool, MEMORY_SIZE);
+
+  mrbc_define_method(0, mrbc_class_object, "debugprint", c_debugprint);
+
+  mrbc_define_method(0, mrbc_class_object, "w_FixnumAdd", c_FixnumAdd);
+  mrbc_define_method(0, mrbc_class_object, "w_StringShift", c_StringShift);
+  mrbc_define_method(0, mrbc_class_object, "w_ArrayAsItIs", c_ArrayAsItIs);
+
+  mrbc_create_task( <%= prefix %>_main_loop, 0 );
+  mrbc_create_task( <%= prefix %>_sub_loop, 0 );
+  mrbc_create_task( <%= prefix %>_operations, 0 );
+  mrbc_run();
+}
+
