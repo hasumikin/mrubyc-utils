@@ -32,7 +32,7 @@ module MrubycUtils
     def install
       config = {}
       while true
-        print "target microcontroller [#{TARGETS.join('/')}]"
+        print "target microcontroller [#{TARGETS.join('/')}]: "
         config['target'] = gets.chomp
         break if TARGETS.include?(config['target'])
       end
