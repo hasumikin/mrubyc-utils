@@ -17,4 +17,3 @@ main.o: $(OBJS)
 $(notdir $(patsubst %.rb,%.h,$(SRCDIR)/%.rb)): $(SRCDIR)/%.rb
 	mrbc -E -B $(basename $@) -o $@ $^
 
-.PHONY: $(OBJS)
