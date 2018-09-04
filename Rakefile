@@ -4,13 +4,16 @@ MRUBY_VERSION="1.4.1"
 
 file :mruby do
   #sh "git clone --depth=1 https://github.com/mruby/mruby"
-  sh "curl -L --fail --retry 3 --retry-delay 1 https://github.com/mruby/mruby/archive/1.3.0.tar.gz -s -o - | tar zxf -"
-  FileUtils.mv("mruby-1.3.0", "mruby")
+  sh "curl -L --fail --retry 3 --retry-delay 1 https://github.com/mruby/mruby/archive/#{MRUBY_VERSION}.tar.gz -s -o - | tar zxf -"
+  FileUtils.mv("mruby-#{MRUBY_VERSION}", "mruby")
 end
 
 APP_NAME=ENV["APP_NAME"] || "mrubyc-utils"
 APP_ROOT=ENV["APP_ROOT"] || Dir.pwd
-APP_VERSION='0.0.4'
+
+require './mrblib/mrubyc-utils/version.rb'
+APP_VERSIONi = MrubycUtils::VERSION
+
 # avoid redefining constants in mruby Rakefile
 mruby_root=File.expand_path(ENV["MRUBY_ROOT"] || "#{APP_ROOT}/mruby")
 mruby_config=File.expand_path(ENV["MRUBY_CONFIG"] || "build_config.rb")

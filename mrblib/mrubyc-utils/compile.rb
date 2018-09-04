@@ -3,6 +3,10 @@ module MrubycUtils
 
     def compile(mode)
       config = load_config
+      print "\e[31m"
+      puts 'Warning: you should compile by `make` and maintain Makefile. But compiling anyway...' if ['posix', 'esp32'].include?(config['target'])
+      print "\e[0m"
+      puts
       file_digests = Hash.new
       while true
         Dir.foreach("#{config['mruby_lib_dir']}") do |filename|
@@ -12,7 +16,7 @@ module MrubycUtils
         end
         #puts file_digests
         break unless mode == 'watch'
-        sleep 1
+        Sleep::sleep 1
       end
     end
 
