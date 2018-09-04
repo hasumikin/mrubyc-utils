@@ -1,0 +1,18 @@
+
+SRCDIR := <%= mruby_lib_dir %>
+SRCFILES := $(wildcard $(SRCDIR)/*.rb)
+OBJS := $(notdir $(patsubst %.rb,%.c,$(SRCFILES)))
+
+main: main.c $(OBJS)
+	cc -DMRBC_DEBUG -o main main.c <%= mrubyc_src_dir %>/*.c <%= mrubyc_src_dir %>/hal/*.c
+
+# xxx.c: <%= mruby_lib_dir %>/<%= prefix %>_xxx.rb
+# 	mrbc -E -B <%= prefix %>_xxx -o <%= c_lib_dir %>/$@ $^
+$(notdir $(patsubst %.rb,%.c,$(SRCDIR)/%.rb)): $(SRCDIR)/%.rb
+	mrbc -E -B $(basename $@) -o <%= c_lib_dir %>/$@ $^
+
+clean:
+	rm <%= c_lib_dir %>/* ./main
+
+#.PHONY: $(OBJS)
+
