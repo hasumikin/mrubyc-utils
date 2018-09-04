@@ -26,18 +26,18 @@ you can hit enter with blank for rest questions. type `yes` at the last confirma
 
 ## Compile `job_xxx.rb` into `job_xxx.c`
 ```
-$ mrubyc-utils compile
+$ make
 ```
 all the `mrblib/job_xxx.rb` will be compiled into `src/job_xxx.c`
+and executable `main` will be created.
 
 before this, you may have to specify mrbc version in case of using rbenv like:
 ```
 $ echo 'mruby-1.4.1' > .ruby-version
 ```
 
-## Build and Run!
+## Run!
 ```
-$ cc -DMRBC_DEBUG -o main main.c mrubyc_src/*.c mrubyc_src/hal/*.c
 $ ./main
 ```
 

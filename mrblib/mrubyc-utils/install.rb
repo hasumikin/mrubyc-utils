@@ -104,12 +104,16 @@ module MrubycUtils
       mruby_lib_dir = config['mruby_lib_dir']
       prefix = config['prefix']
       http = HttpRequest.new()
-      tasks = if config['target'] == 'esp32'
-        [ { from: "targets/esp32/Makefile.erb", to: 'Makefile' },
-          { from: "targets/esp32/components/mrubyc/component.mk.erb", to: 'components/mrubyc/component.mk' },
-          { from: "targets/esp32/main/main.c.erb", to: 'main/main.c' },
-          { from: "targets/esp32/main/component.mk.erb" , to: 'main/component.mk' } ]
-      else
+      tasks = case config['target']
+      when 'esp32'
+        [ { from: "targets/#{config['target']}/Makefile.erb", to: 'Makefile' },
+          { from: "targets/#{config['target']}/components/mrubyc/component.mk.erb", to: 'components/mrubyc/component.mk' },
+          { from: "targets/#{config['target']}/main/main.c.erb", to: 'main/main.c' },
+          { from: "targets/#{config['target']}/main/component.mk.erb" , to: 'main/component.mk' } ]
+      when 'posix'
+        [ { from: "targets/#{config['target']}/Makefile.erb", to: 'Makefile' },
+          { from: "targets/#{config['target']}/main.c.erb", to: 'main.c' } ]
+      when 'psoc5lp'
         [ { from: "targets/#{config['target']}/main.c.erb", to: 'main.c' } ]
       end
       (tasks + [
