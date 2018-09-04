@@ -4,6 +4,7 @@ module MrubycUtils
       config = load_config
       return 1 unless config
       klass.downcase!
+      klass.sub!(/class$/, '')
       indent = ''
       while true
         puts klass.capitalize
@@ -26,6 +27,13 @@ module MrubycUtils
           match = line.match(/mrbc_define_method\([^,]+,\s*mrbc_class_#{klass},\s*"([^"]+)"/)
           methods << match[1] if match
           match = line.match(/mrbc_define_method\([^,]+,\s*c_#{klass},\s*"([^"]+)"/)
+          methods << match[1] if match
+        end
+      end
+      Dir.foreach("#{config['mrubyc_mrblib_dir']}/") do |filename|
+        next if File.basename(filename) != "#{klass}.rb"
+        File.foreach("#{config['mrubyc_mrblib_dir']}/#{filename}") do |line|
+          match = line.match(/def\s+([^(]+)/)
           methods << match[1] if match
         end
       end
