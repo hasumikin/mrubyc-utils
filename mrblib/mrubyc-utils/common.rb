@@ -2,15 +2,19 @@ module MrubycUtils
   class << self
     CONFIG_FILE = '.mrubycconfig'
 
-    def cp(from, to)
+    def cp(from, to, from_str = nil, to_str = nil)
       unless File.exists?(from)
-        puts "WARN - skippeng copy because '#{from}' does not exist"
+        puts "\e[31mWARN - skippeng copy because '#{from}' does not exist\e[0m"
         return false
       end
       puts "INFO - '#{to}' will be overwritten" if File.exists?(to)
       File.open(from) do |f_from|
         File.open(to, 'w') do |f_to|
-          f_to.puts f_from.read
+          if from_str && to_str
+            f_to.puts f_from.read.split(from_str).join(to_str) # String#tr の代わりのつもり
+          else
+            f_to.puts f_from.read
+          end
         end
       end
       puts "INFO - copied from '#{from}' to '#{to}'"
@@ -45,17 +49,23 @@ module MrubycUtils
 
     def copy_mrubyc_to_src(config)
       [ { from: "#{config['mrubyc_repo_dir']}/src", to: config['mrubyc_src_dir'] },
-        { from: "#{config['mrubyc_repo_dir']}/src/hal_#{config['target']}", to: "#{config['mrubyc_src_dir']}/hal" } ].each do |src|
+        { from: "#{config['mrubyc_repo_dir']}/src/hal_#{config['target']}", to: "#{config['mrubyc_src_dir']}/hal" },
+        { from: "#{config['mrubyc_repo_dir']}/mrblib", to: config['mrubyc_mrblib_dir'] }].each do |src|
         Dir.foreach(src[:from]) do |filename|
           next if ['.', '..'].include?(filename)
           from = "#{src[:from]}/#{filename}"
           next if File.directory?(from)
           to = "#{src[:to]}/#{filename}"
           if NO_OVERWRITES.include?(filename) && File.exist?(to)
-            puts "WARM - skip copying #{from} because #{to} exists"
+            puts "\e[31mWARM - skip copying #{from} because #{to} exists\e[0m"
             next
           end
-          cp(from, to)
+          from_str, to_str = if from == "#{config['mrubyc_repo_dir']}/mrblib/Makefile"
+            ['/src/', "/#{config['mrubyc_src_dir'].split('/').last}/"] # esp32は階層が深いので
+          else
+            [nil, nil]
+          end
+          cp(from, to, from_str, to_str)
         end
         mkdir_p("#{config['mrubyc_src_dir']}/hal")
       end
@@ -63,3 +73,4 @@ module MrubycUtils
 
   end
 end
+

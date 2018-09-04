@@ -13,6 +13,11 @@ module MrubycUtils
         'esp32' => 'components/mrubyc/mrubyc_src',
         'default' => 'mrubyc_src'
       },
+      'mrubyc_mrblib_dir' => {
+        'question' => 'dir name where mruby/c\'s mrblib files are located (they will are compiled as [mrubyc_src_dir]/mrblib.c)',
+        'esp32' => 'components/mrubyc/mrubyc_mrblib',
+        'default' => 'mrubyc_mrblib'
+      },
       'mruby_lib_dir' => {
         'question' => 'dir name where your mruby code are lacated',
         'default' => 'mrblib'
@@ -48,6 +53,7 @@ module MrubycUtils
       return false unless git_clone_mrubyc(config)
       create_main_dir if config['target'] == 'esp32'
       create_mrubyc_src_dir(config)
+      create_mrubyc_mrblib_dir(config)
       copy_mrubyc_to_src(config)
       create_mruby_lib_dir(config)
       download_templates(config)
@@ -72,7 +78,12 @@ module MrubycUtils
         puts 'You should type exactly `yes`.' if OBSCURITY.include?(answer)
       end
       return true if YES.include?(answer)
-      return false if NO.include?(answer)
+      if NO.include?(answer)
+        print "\e[31m"
+        puts 'abort'
+        print "\e[0m"
+        return false
+      end
     end
 
     def git_clone_mrubyc(config)
@@ -90,6 +101,10 @@ module MrubycUtils
 
     def create_mrubyc_src_dir(config)
       mkdir_p(config['mrubyc_src_dir'])
+    end
+
+    def create_mrubyc_mrblib_dir(config)
+      mkdir_p(config['mrubyc_mrblib_dir'])
     end
 
     def create_c_lib_dir(config)
