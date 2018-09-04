@@ -16,7 +16,7 @@ module MrubycUtils
         end
         #puts file_digests
         break unless mode == 'watch'
-        sleep 1
+        Sleep::sleep 1
       end
     end
 
