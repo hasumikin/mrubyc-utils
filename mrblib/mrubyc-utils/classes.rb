@@ -11,8 +11,12 @@ module MrubycUtils
           klasses << match[1] if match
         end
       end
-      klasses.uniq.sort.each do |klass|
-        puts "- #{klass.sub(/Class$/, '')}"
+      Dir.foreach("#{config['mrubyc_mrblib_dir']}/") do |filename|
+        next if File.extname(filename) != ".rb"
+        klasses << File.basename(filename).sub('.rb', '').capitalize
+      end
+     klasses.uniq.sort.each do |klass|
+        puts "- #{klass}"
       end
     end
   end

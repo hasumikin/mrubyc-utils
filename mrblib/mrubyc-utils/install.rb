@@ -13,6 +13,11 @@ module MrubycUtils
         'esp32' => 'components/mrubyc/mrubyc_src',
         'default' => 'mrubyc_src'
       },
+      'mrubyc_mrblib_dir' => {
+        'question' => 'dir name where mruby/c\'s mrblib files are located (they will are compiled as [mrubyc_src_dir]/mrblib.c)',
+        'esp32' => 'components/mrubyc/mrubyc_mrblib',
+        'default' => 'mrubyc_mrblib'
+      },
       'mruby_lib_dir' => {
         'question' => 'dir name where your mruby code are lacated',
         'default' => 'mrblib'
@@ -48,6 +53,7 @@ module MrubycUtils
       return false unless git_clone_mrubyc(config)
       create_main_dir if config['target'] == 'esp32'
       create_mrubyc_src_dir(config)
+      create_mrubyc_mrblib_dir(config)
       copy_mrubyc_to_src(config)
       create_mruby_lib_dir(config)
       download_templates(config)
@@ -72,12 +78,15 @@ module MrubycUtils
         puts 'You should type exactly `yes`.' if OBSCURITY.include?(answer)
       end
       return true if YES.include?(answer)
-      return false if NO.include?(answer)
+      if NO.include?(answer)
+        puts "\e[31mabort\e[0m"
+        return false
+      end
     end
 
     def git_clone_mrubyc(config)
       if Dir.exist?(config['mrubyc_repo_dir'])
-        puts "FATAL - #{config['mrubyc_repo_dir']} already exists!"
+        puts "\e[31;1mFATAL - #{config['mrubyc_repo_dir']} already exists!\e[0m"
         return false
       end
       `git clone https://github.com/mrubyc/mrubyc.git #{config['mrubyc_repo_dir']}`
@@ -90,6 +99,10 @@ module MrubycUtils
 
     def create_mrubyc_src_dir(config)
       mkdir_p(config['mrubyc_src_dir'])
+    end
+
+    def create_mrubyc_mrblib_dir(config)
+      mkdir_p(config['mrubyc_mrblib_dir'])
     end
 
     def create_c_lib_dir(config)
@@ -122,7 +135,7 @@ module MrubycUtils
         puts "INFO - download #{url}"
         request = http.get(url, {})
         if request.code != 200
-          puts "FATAL - template file '#{url}' was not found"
+          puts "\e[31;1mFATAL - template file '#{url}' was not found\e[0m"
           raise RuntimeError
         end
         File.open(template[:to], 'w') do |f|
