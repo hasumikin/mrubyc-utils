@@ -79,16 +79,14 @@ module MrubycUtils
       end
       return true if YES.include?(answer)
       if NO.include?(answer)
-        print "\e[31m"
-        puts 'abort'
-        print "\e[0m"
+        puts "\e[31mabort\e[0m"
         return false
       end
     end
 
     def git_clone_mrubyc(config)
       if Dir.exist?(config['mrubyc_repo_dir'])
-        puts "FATAL - #{config['mrubyc_repo_dir']} already exists!"
+        puts "\e[31;1mFATAL - #{config['mrubyc_repo_dir']} already exists!\e[0m"
         return false
       end
       `git clone https://github.com/mrubyc/mrubyc.git #{config['mrubyc_repo_dir']}`
@@ -137,7 +135,7 @@ module MrubycUtils
         puts "INFO - download #{url}"
         request = http.get(url, {})
         if request.code != 200
-          puts "FATAL - template file '#{url}' was not found"
+          puts "\e[31;1mFATAL - template file '#{url}' was not found\e[0m"
           raise RuntimeError
         end
         File.open(template[:to], 'w') do |f|

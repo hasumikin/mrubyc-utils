@@ -4,7 +4,7 @@ module MrubycUtils
 
     def cp(from, to, from_str = nil, to_str = nil)
       unless File.exists?(from)
-        puts "\e[31mWARN - skippeng copy because '#{from}' does not exist\e[0m"
+        puts "\e[31;1mWARN - skippeng copy because '#{from}' does not exist\e[0m"
         return false
       end
       puts "INFO - '#{to}' will be overwritten" if File.exists?(to)
@@ -12,6 +12,7 @@ module MrubycUtils
         File.open(to, 'w') do |f_to|
           if from_str && to_str
             f_to.puts f_from.read.split(from_str).join(to_str) # String#tr の代わりのつもり
+            puts "\e[32;1mNOTICE - replacement from #{from_str}' to #{to_str} will be invoked\e[0m"
           else
             f_to.puts f_from.read
           end
@@ -24,7 +25,7 @@ module MrubycUtils
       return unless dir
       if !File.directory?(dir)
         if !Dir.mkdir_p(dir)
-          puts "FATAL - failed to create directory: #{dir}"
+          puts "\e[31;1mFATAL - failed to create directory: #{dir}\e[0m"
           raise RuntimeError
         end
       end
@@ -39,7 +40,7 @@ module MrubycUtils
 
     def load_config
       unless File.exists?(CONFIG_FILE)
-        puts "FATAL - #{CONFIG_FILE} is not found. You have to `mrubyc-utils install` first or confirm your current directory"
+        puts "\e[31;1mFATAL - #{CONFIG_FILE} is not found. You have to `mrubyc-utils install` first or confirm your current directory\e[0m"
         return false
       end
       File.open(CONFIG_FILE) do |f|
@@ -57,7 +58,7 @@ module MrubycUtils
           next if File.directory?(from)
           to = "#{src[:to]}/#{filename}"
           if NO_OVERWRITES.include?(filename) && File.exist?(to)
-            puts "\e[31mWARM - skip copying #{from} because #{to} exists\e[0m"
+            puts "\e[31;1mWARN - skip copying #{from} because #{to} exists\e[0m"
             next
           end
           from_str, to_str = if from == "#{config['mrubyc_repo_dir']}/mrblib/Makefile"
