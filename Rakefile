@@ -12,7 +12,7 @@ APP_NAME=ENV["APP_NAME"] || "mrubyc-utils"
 APP_ROOT=ENV["APP_ROOT"] || Dir.pwd
 
 require './mrblib/mrubyc-utils/version.rb'
-APP_VERSIONi = MrubycUtils::VERSION
+APP_VERSION = MrubycUtils::VERSION
 
 # avoid redefining constants in mruby Rakefile
 mruby_root=File.expand_path(ENV["MRUBY_ROOT"] || "#{APP_ROOT}/mruby")
