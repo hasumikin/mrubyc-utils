@@ -11,6 +11,9 @@ $(TARGET): $(OBJS)
 	$(CC) -DMRBC_DEBUG -o $@ $@.c $(MRUBYCSRCDIR)/*.c $(MRUBYCSRCDIR)/hal/*.c
 
 $(OBJDIR)/%.c: $(SRCDIR)/%.rb
+	@if [ ! -d $(dir $@) ]; \
+		then echo "mkdir -p $(dir $@)"; mkdir -p $(dir $@); \
+		fi
 	$(MRBC) -E -B $(basename $(notdir $@)) -o $@ $<
 
 clean:

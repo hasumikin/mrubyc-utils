@@ -7,11 +7,22 @@ Utilities for developer who uses [mruby/c](https://github.com/mrubyc/mrubyc)
 mrubyc-utils is built with [mruby-cli](https://github.com/hone/mruby-cli) and provides some usuful functions for your development with mruby/c.
 Make your IoT development smooth and fun.
 
-## Demo
-[TBD]
+## Wrapper of gem 'mrubyc-test' and 'mrubyc-debugger'
 
-## VS.
-- N/A
+[mrubyc-test](https://github.com/hasumikin/mrubyc-test) and [mrubyc-debugger](https://github.com/hasumikin/mrubyc-debugger) are gems of CRuby.
+They may have a problem of ruby-version because the gems run on CRuby but want to use mruby internally.
+You can use mrubyc-utils as wrapper command fot those gems because mrubyc-utils does not depend on rubyenv.
+Note that this feature is available on v0.0.6+
+
+### Usage
+
+This is equivalent to `mrubyc-test init`
+
+    $ mrubyc-utils test init
+
+Also you can
+
+    $ mrubyc-utils debugger
 
 ## Requirement
 mrubyc-utils assumes that you are using PSoC Creator to write firmware program and targetting PSoC5LP microcontrollers.
