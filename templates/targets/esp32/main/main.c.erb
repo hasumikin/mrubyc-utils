@@ -9,9 +9,9 @@
 
 #include "mrubyc.h"
 
-#include "<%= prefix %>_main_loop.h"
-#include "<%= prefix %>_operations.h"
-#include "<%= prefix %>_sub_loop.h"
+#include "models/operations.h"
+#include "tasks/main_loop.h"
+#include "tasks/sub_loop.h"
 
 #define MEMORY_SIZE (1024*30)
 
@@ -102,9 +102,9 @@ void app_main(void) {
   mrbc_define_method(0, mrbc_class_object, "w_StringShift", c_StringShift);
   mrbc_define_method(0, mrbc_class_object, "w_ArrayAsItIs", c_ArrayAsItIs);
 
-  mrbc_create_task( <%= prefix %>_main_loop, 0 );
-  mrbc_create_task( <%= prefix %>_sub_loop, 0 );
-  mrbc_create_task( <%= prefix %>_operations, 0 );
+  mrbc_create_task( main_loop, 0 );
+  mrbc_create_task( sub_loop, 0 );
+  mrbc_create_task( operations, 0 );
   mrbc_run();
 }
 

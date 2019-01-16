@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "<%= c_lib_dir %>/<%= prefix %>_operations.c"
-#include "<%= c_lib_dir %>/<%= prefix %>_main_loop.c"
-#include "<%= c_lib_dir %>/<%= prefix %>_sub_loop.c"
+#include "<%= c_lib_dir %>/models/operations.c"
+#include "<%= c_lib_dir %>/tasks/main_loop.c"
+#include "<%= c_lib_dir %>/tasks/sub_loop.c"
 
 #define MEMORY_SIZE (1024*40)
 static uint8_t memory_pool[MEMORY_SIZE];
@@ -105,9 +105,9 @@ int main(void) {
   mrbc_define_method(0, mrbc_class_object, "w_StringShift", c_StringShift);
   mrbc_define_method(0, mrbc_class_object, "w_ArrayAsItIs", c_ArrayAsItIs);
 
-  mrbc_create_task( <%= prefix %>_operations, 0 );
-  mrbc_create_task( <%= prefix %>_main_loop, 0 );
-  mrbc_create_task( <%= prefix %>_sub_loop, 0 );
+  mrbc_create_task( operations, 0 );
+  mrbc_create_task( main_loop, 0 );
+  mrbc_create_task( sub_loop, 0 );
   mrbc_run();
 
   return 0;

@@ -1,18 +1,20 @@
+MRBC = mrbc
+CC = cc
+SRCDIR = <%= mruby_lib_dir %>
+OBJDIR = <%= c_lib_dir %>
+MRUBYCSRCDIR = <%= mrubyc_src_dir %>
+SRCFILES = $(wildcard $(SRCDIR)/**/*.rb $(SRCDIR)/*.rb)
+OBJS = $(subst $(SRCDIR),$(OBJDIR),$(patsubst %.rb,%.c,$(SRCFILES)))
+TARGET = main
 
-SRCDIR := <%= mruby_lib_dir %>
-SRCFILES := $(wildcard $(SRCDIR)/*.rb)
-OBJS := $(notdir $(patsubst %.rb,%.c,$(SRCFILES)))
+$(TARGET): $(OBJS)
+	$(CC) -DMRBC_DEBUG -o $@ $@.c $(MRUBYCSRCDIR)/*.c $(MRUBYCSRCDIR)/hal/*.c
 
-main: main.c $(OBJS)
-	cc -DMRBC_DEBUG -o main main.c <%= mrubyc_src_dir %>/*.c <%= mrubyc_src_dir %>/hal/*.c
-
-# xxx.c: <%= mruby_lib_dir %>/<%= prefix %>_xxx.rb
-# 	mrbc -E -B <%= prefix %>_xxx -o <%= c_lib_dir %>/$@ $^
-$(notdir $(patsubst %.rb,%.c,$(SRCDIR)/%.rb)): $(SRCDIR)/%.rb
-	mrbc -E -B $(basename $@) -o <%= c_lib_dir %>/$@ $^
+$(OBJDIR)/%.c: $(SRCDIR)/%.rb
+	$(MRBC) -E -B $(basename $(notdir $@)) -o $@ $<
 
 clean:
-	rm <%= c_lib_dir %>/* ./main
+	rm $(OBJDIR)/* ./$(TARGET)
 
 #.PHONY: $(OBJS)
 
