@@ -11,6 +11,7 @@ def gem_config(conf)
   conf.gem :github => 'mattn/mruby-onig-regexp'
   #conf.gem :github => 'iij/mruby-regexp-pcre'
   conf.gem :github => 'matsumoto-r/mruby-sleep'
+  conf.gem :github => 'iij/mruby-env'
 
   # be sure to include this gem (the cli app)
   conf.gem File.expand_path(File.dirname(__FILE__))

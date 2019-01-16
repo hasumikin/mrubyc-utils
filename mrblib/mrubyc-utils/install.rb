@@ -1,7 +1,22 @@
 module MrubycUtils
   class << self
-    TARGETS = ['psoc5lp', 'esp32', 'posix']
     CONFIGURATIONS = {
+      'target' => {
+        'question' => "target microcontroller",
+        'default' => 'psoc5lp|esp32|posix',
+        'match' => /\A(psoc5lp|esp32|posix)\z/
+      },
+      'mruby_version' => {
+        'question' => "mruby version that you want to compile your firmware with",
+        'default' => 'mruby-x.x.x',
+        'match' => /\Amruby-\d+\.\d+\.\d+\z/,
+        'proc' => Proc.new { |mruby_version| system "echo #{mruby_version} > .ruby-version"},
+      },
+      'cruby_version' => {
+        'question' => "CRuby version that you want to use for mrubyc-test",
+        'default' => 'x.x.x',
+        'match' => /\A\d+\.\d+\.\d+\z/
+      },
       'mrubyc_repo_dir' => {
         'question' => 'dir name of mruby/c repository',
         'psoc5lp' => '.mrubyc',
@@ -26,27 +41,33 @@ module MrubycUtils
         'question' => 'dir name where your compiled mruby byte codes are located',
         'esp32' => '_skip_',
         'default' => 'src'
-      },
-      'prefix' => {
-        'question' => 'prefix of your mruby source file name',
-        'default' => 'job'
       }
     }
     NO_OVERWRITES = ['vm_config.h']
+    INVALID = "\e[31;1m  Invalid input. Try agin\e[0m"
 
     def install
       config = {}
-      while true
-        print "target microcontroller [#{TARGETS.join('/')}]: "
-        config['target'] = gets.chomp
-        break if TARGETS.include?(config['target'])
-      end
       CONFIGURATIONS.each do |key, value|
-        default = value[config['target']] || value['default']
-        next if default == '_skip_'
-        print "#{value['question']} [#{default}]: "
-        config[key] = gets.chomp
-        config[key] = default if config[key].empty?
+        next if value[config['target']] == '_skip_'
+        while true
+          default = value[config['target']] || value['default']
+          print "#{value['question']} [#{default}]: "
+          config[key] = gets.chomp
+          config[key] = default if config[key].empty?
+          if value['match'].nil?
+            break
+          else
+            if config[key].match(value['match'])
+              break
+            else
+              puts INVALID
+            end
+          end
+        end
+        if value['proc']
+          value['proc'].call(config[key])
+        end
       end
       return false unless confirm(config)
       save_config(config)
@@ -110,12 +131,12 @@ module MrubycUtils
     end
 
     def create_mruby_lib_dir(config)
-      mkdir_p(config['mruby_lib_dir'])
+      mkdir_p(config['mruby_lib_dir'] + '/tasks')
+      mkdir_p(config['mruby_lib_dir'] + '/models')
     end
 
     def download_templates(config)
       mruby_lib_dir = config['mruby_lib_dir']
-      prefix = config['prefix']
       http = HttpRequest.new()
       tasks = case config['target']
       when 'esp32'
@@ -131,9 +152,9 @@ module MrubycUtils
       end
       (tasks + [
         { from: "targets/#{config['target']}/gitignore.erb", to: '.gitignore' },
-        { from: 'mrblib/prefix_main_loop.rb.erb', to: "#{mruby_lib_dir}/#{prefix}_main_loop.rb" },
-        { from: 'mrblib/prefix_sub_loop.rb.erb', to: "#{mruby_lib_dir}/#{prefix}_sub_loop.rb" },
-        { from: 'mrblib/prefix_operations.rb.erb', to: "#{mruby_lib_dir}/#{prefix}_operations.rb" }
+        { from: 'mrblib/tasks/main_loop.rb.erb', to: "#{mruby_lib_dir}/tasks/main_loop.rb" },
+        { from: 'mrblib/tasks/sub_loop.rb.erb', to: "#{mruby_lib_dir}/tasks/sub_loop.rb" },
+        { from: 'mrblib/models/operations.rb.erb', to: "#{mruby_lib_dir}/models/operations.rb" }
       ]).each do |template|
         url = sprintf("https://%s/%s/%s", 'raw.githubusercontent.com', 'hasumikin/mrubyc-utils/master/templates', template[:from])
         puts "INFO - download #{url}"

@@ -38,13 +38,18 @@ module MrubycUtils
       end
     end
 
-    def load_config
-      unless File.exists?(CONFIG_FILE)
-        puts "\e[31;1mFATAL - #{CONFIG_FILE} is not found. You have to `mrubyc-utils install` first or confirm your current directory\e[0m"
-        return false
-      end
-      File.open(CONFIG_FILE) do |f|
-        YAML.load(f.read)
+    def load_config(ignore_absence_of_config = false)
+      if File.exists?(CONFIG_FILE)
+        File.open(CONFIG_FILE) do |f|
+          YAML.load(f.read)
+        end
+      else
+        if ignore_absence_of_config
+          {}
+        else
+          puts "\e[31;1mFATAL - #{CONFIG_FILE} is not found. You have to `mrubyc-utils install` first or confirm your current directory\e[0m"
+          false
+        end
       end
     end
 
