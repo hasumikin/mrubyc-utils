@@ -16,14 +16,14 @@ static uint8_t my_memory_pool[MEMORY_SIZE];
 */
 
 /* sample function of passing Fixnum */
-static void c_FixnumAdd(mrb_vm *vm, mrb_value *v, int argc){
+static void c_FixnumAdd(struct VM *vm, mrbc_value v[], int argc){
   int fixnum = GET_INT_ARG(1) + 1;
   /* C int can be returned as it is */
   SET_INT_RETURN(fixnum);
 }
 
 /* sample function of passing String */
-static void c_StringShift(mrb_vm *vm, mrb_value *v, int argc){
+static void c_StringShift(struct VM *vm, mrbc_value v[], int argc){
   char *string = GET_STRING_ARG(1);
   if (string[0] < 0x7f) {
     string[0] = string[0] + 1;
@@ -31,33 +31,33 @@ static void c_StringShift(mrb_vm *vm, mrb_value *v, int argc){
     string[0] = 0x20;
   }
   /* C char* should be converted into mruby String */
-  mrb_value mrb_string = mrbc_string_new_cstr(vm, string);
-  SET_RETURN(mrb_string);
+  mrbc_value mrbc_string = mrbc_string_new_cstr(vm, string);
+  SET_RETURN(mrbc_string);
 }
 
 /* sample function of Array */
-static void c_ArrayAsItIs(mrb_vm *vm, mrb_value *v, int argc){
+static void c_ArrayAsItIs(struct VM *vm, mrbc_value v[], int argc){
   /* convert mruby Array into C array */
-  mrb_value mrb_array = GET_ARY_ARG(1);
+  mrbc_value mrbc_array = GET_ARY_ARG(1);
   int length = GET_INT_ARG(2);
   int array[length];
   for( int i = 0; i < length; i++ ) {
-    mrb_value value = mrbc_array_get(&mrb_array, i);
+    mrbc_value value = mrbc_array_get(&mrbc_array, i);
     array[i] = value.i;
   }
   /* convert vice versa */
-  mrb_value mrb_new_array = mrbc_array_new(vm, length);
+  mrbc_value mrbc_new_array = mrbc_array_new(vm, length);
   for( int i = 0; i < length; i++ ) {
-    mrb_value value = mrb_fixnum_value(array[i]);
-    mrbc_array_set( &mrb_new_array, i, &value );
+    mrbc_value value = mrbc_fixnum_value(array[i]);
+    mrbc_array_set( &mrbc_new_array, i, &value );
   }
-  SET_RETURN(mrb_new_array);
+  SET_RETURN(mrbc_new_array);
 }
 
 //================================================================
 /*! DEBUG PRINT
 */
-static void c_debugprint(mrb_vm *vm, mrb_value *v, int argc){
+static void c_debugprint(struct VM *vm, mrbc_value v[], int argc){
   for( int i = 0; i < 79; i++ ) { console_putchar('='); }
   console_putchar('\n');
   int total, used, free, fragment;
