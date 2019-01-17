@@ -1,5 +1,11 @@
 def __main__(argv)
+  config = MrubycUtils.load_config(true)
+  proprietary_commands = ['test', 'debugger'] # gem `mrubyc-test` `mrubyc-debugger`
   opts = case argv[1]
+  when '', nil
+    puts 'Invalid argument. see --help'
+    puts opts
+    return 1
   when 'install'
     !argv[2]
   when 'update'
@@ -20,17 +26,13 @@ def __main__(argv)
   when '-h', '--help', 'help'
     MrubycUtils.usage
     return
-  when 'test', 'debugger' #  for wrapping gems 'mrubyc-test' and 'mrubyc-debugger'
-    config = MrubycUtils.load_config(true)
-    cruby_version = config['cruby_version']
-    command_entity = "mrubyc-#{argv[1]}"
-    cmd = "PATH=#{ENV['PATH']} RBENV_VERSION=#{cruby_version} #{command_entity} #{argv[2]}"
+  else
+    command_entity = proprietary_commands.include?(argv[1]) ? "mrubyc-#{argv[1]}" : argv[1]
+    envs = ["RBENV_VERSION=#{config['cruby_version']}"]
+    ENV.keys.each { |key| envs << "#{key}='#{ENV[key]}'" }
+    cmd = "#{envs.join(' ')} #{command_entity} #{argv.last(argv.size - 2).join(' ')}"
     exit_code = system cmd
     exit (exit_code ? 0 : 1)
-  else
-    puts 'Invalid argument. see --help'
-    puts opts
-    return 1
   end
 
   if (opts.is_a?(Hash) && opts.has_key?('?')) || opts == false
