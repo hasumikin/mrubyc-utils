@@ -2,7 +2,7 @@ def gem_config(conf)
   #conf.gembox 'default'
   conf.gembox 'full-core'
   conf.gem :mgem => 'mruby-getopts'
-  conf.gem :mgem => 'mruby-yaml'
+  conf.gem :github => 'hasumikin/mruby-yaml'
   conf.gem :mgem => 'mruby-httprequest'
   conf.gem :github => 'iij/mruby-dir'
   conf.gem :github => 'mgi166/mruby-mkdir-p'
@@ -34,15 +34,15 @@ MRuby::Build.new('x86_64-pc-linux-gnu') do |conf|
   gem_config(conf)
 end
 
-#MRuby::CrossBuild.new('i686-pc-linux-gnu') do |conf|
-#  toolchain :gcc
-#
-#  [conf.cc, conf.cxx, conf.linker].each do |cc|
-#    cc.flags << "-m32"
-#  end
-#
-#  gem_config(conf)
-#end
+MRuby::CrossBuild.new('i686-pc-linux-gnu') do |conf|
+  toolchain :gcc
+
+  [conf.cc, conf.cxx, conf.linker].each do |cc|
+    cc.flags << "-m32"
+  end
+
+  gem_config(conf)
+end
 
 MRuby::CrossBuild.new('x86_64-apple-darwin14') do |conf|
   toolchain :clang

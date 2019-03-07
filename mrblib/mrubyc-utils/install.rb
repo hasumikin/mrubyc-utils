@@ -18,26 +18,31 @@ module MrubycUtils
         'match' => /\A\d+\.\d+\.\d+\z/
       },
       'mrubyc_repo_dir' => {
+        'skip' => true,
         'question' => 'dir name of mruby/c repository',
         'psoc5lp' => '.mrubyc',
         'esp32' => '.mrubyc',
         'posix' => '.mrubyc'
       },
       'mrubyc_src_dir' => {
+        'skip' => true,
         'question' => 'dir name where mruby/c\'s sources are located (main.c will include them)',
         'esp32' => 'components/mrubyc/mrubyc_src',
         'default' => 'mrubyc_src'
       },
       'mrubyc_mrblib_dir' => {
+        'skip' => true,
         'question' => 'dir name where mruby/c\'s mrblib files are located (they will are compiled as [mrubyc_src_dir]/mrblib.c)',
         'esp32' => 'components/mrubyc/mrubyc_mrblib',
         'default' => 'mrubyc_mrblib'
       },
       'mruby_lib_dir' => {
+        'skip' => true,
         'question' => 'dir name where your mruby code are lacated',
         'default' => 'mrblib'
       },
       'c_lib_dir' => {
+        'skip' => true,
         'question' => 'dir name where your compiled mruby byte codes are located',
         'esp32' => '_skip_',
         'default' => 'src'
@@ -50,8 +55,12 @@ module MrubycUtils
       config = {}
       CONFIGURATIONS.each do |key, value|
         next if value[config['target']] == '_skip_'
+        default = value[config['target']] || value['default']
+        if value['skip']
+          config[key] = default
+          next
+        end
         while true
-          default = value[config['target']] || value['default']
           print "#{value['question']} [#{default}]: "
           config[key] = gets.chomp
           config[key] = default if config[key].empty?
@@ -71,7 +80,7 @@ module MrubycUtils
       end
       return false unless confirm(config)
       save_config(config)
-      return false unless git_clone_mrubyc(config)
+      return false unless git_submodule_add_mrubyc(config)
       create_main_dir if config['target'] == 'esp32'
       create_mrubyc_src_dir(config)
       create_mrubyc_mrblib_dir(config)
@@ -79,7 +88,6 @@ module MrubycUtils
       create_mruby_lib_dir(config)
       download_templates(config)
       create_c_lib_dir(config)
-      add_gitignore(config)
     end
 
     YES = ['yes']
@@ -105,12 +113,15 @@ module MrubycUtils
       end
     end
 
-    def git_clone_mrubyc(config)
+    def git_submodule_add_mrubyc(config)
       if Dir.exist?(config['mrubyc_repo_dir'])
         puts "\e[31;1mFATAL - #{config['mrubyc_repo_dir']} already exists!\e[0m"
         return false
       end
-      `git clone https://github.com/mrubyc/mrubyc.git #{config['mrubyc_repo_dir']}`
+      puts "INFO - git init"
+      `git init`
+      puts "INFO - git submodule add git://github.com/mrubyc/mrubyc.git #{config['mrubyc_repo_dir']}"
+      `git submodule add git://github.com/mrubyc/mrubyc.git #{config['mrubyc_repo_dir']}`
       return true
     end
 
@@ -157,7 +168,7 @@ module MrubycUtils
         { from: 'mrblib/models/operations.rb.erb', to: "#{mruby_lib_dir}/models/operations.rb" }
       ]).each do |template|
         url = sprintf("https://%s/%s/%s", 'raw.githubusercontent.com', 'hasumikin/mrubyc-utils/master/templates', template[:from])
-        puts "INFO - download #{url}"
+        puts "INFO - downloading a template from #{url}"
         request = http.get(url, {})
         if request.code != 200
           puts "\e[31;1mFATAL - template file '#{url}' was not found\e[0m"
@@ -175,15 +186,6 @@ module MrubycUtils
         erb.gsub!("<%= #{key} %>", value)
       end
       erb
-    end
-
-    def add_gitignore(config)
-      File.open('.gitignore', 'a') do |f|
-        ['# added by mrubyc-utils', "#{config['mrubyc_repo_dir']}/"].each do |line|
-          f.puts line
-          puts "INFO - \"#{line}\" was added to .gitignore"
-        end
-      end
     end
 
   end

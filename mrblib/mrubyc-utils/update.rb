@@ -12,7 +12,7 @@ module MrubycUtils
         end
         break if ['y', 'yes'].include?(answer.downcase)
       end
-      command = "cd #{config['mrubyc_repo_dir']} && git pull; cd -"
+      command = "cd #{config['mrubyc_repo_dir']} && git checkout master && git pull; cd -"
       puts command
       `#{command}`
       copy_mrubyc_to_src(config)

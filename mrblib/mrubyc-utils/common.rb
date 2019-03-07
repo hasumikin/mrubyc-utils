@@ -28,8 +28,10 @@ module MrubycUtils
           puts "\e[31;1mFATAL - failed to create directory: #{dir}\e[0m"
           raise RuntimeError
         end
+        puts "INFO - created '#{dir}/'"
+      else
+        puts "INFO - skip creating '#{dir}/'"
       end
-      puts "INFO - created '#{dir}/'"
     end
 
     def save_config(config)
@@ -47,7 +49,7 @@ module MrubycUtils
         if ignore_absence_of_config
           {}
         else
-          puts "\e[31;1mFATAL - #{CONFIG_FILE} is not found. You have to `mrubyc-utils install` first or confirm your current directory\e[0m"
+          puts "\e[31;1mFATAL - #{CONFIG_FILE} is not found. You have to do `mrubyc-utils install` first or confirm your current directory\e[0m"
           false
         end
       end

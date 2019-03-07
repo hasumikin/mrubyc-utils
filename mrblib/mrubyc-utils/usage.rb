@@ -7,7 +7,7 @@ Usage: mrubyc-utils COMMAND [ARGS]
  install        Install mruby/c repo into your local and setup templates.
                 Please run this command at the top directory
                 of your firmware project.
- update         Update mruby/c repo to the newest master branch.
+ update         Update mruby/c repo to the newest **master** branch.
  checkout       Checkout specified tag or commit of mruby/c repo.
   -t | --tag      [required] You can specify anything that
                   `git checkout` will accept.
