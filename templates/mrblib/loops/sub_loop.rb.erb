@@ -1,0 +1,16 @@
+while !$mutex
+  relinquish()
+end
+
+debugprint('start', 'sub_loop')
+
+while true
+  sleep 10
+  $mutex.lock()
+  puts 'main_loop stops until sub_loop unlocks Mutex'
+  sleep 5
+  debugprint('check', 'memory usage')
+  sleep 5
+  $mutex.unlock()
+end
+

@@ -1,0 +1,18 @@
+$mutex = Mutex.new
+
+debugprint('start', 'main_loop')
+
+while true
+  $mutex.lock()
+  puts fixnum_sample
+  $mutex.unlock()
+  sleep 1
+  $mutex.lock()
+  puts string_sample
+  $mutex.unlock()
+  sleep 1
+  $mutex.lock()
+  puts array_sample
+  $mutex.unlock()
+end
+
