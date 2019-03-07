@@ -142,14 +142,14 @@ module MrubycUtils
     end
 
     def create_mruby_lib_dir(config)
-      mkdir_p(config['mruby_lib_dir'] + '/tasks')
+      mkdir_p(config['mruby_lib_dir'] + '/loops')
       mkdir_p(config['mruby_lib_dir'] + '/models')
     end
 
     def download_templates(config)
       mruby_lib_dir = config['mruby_lib_dir']
       http = HttpRequest.new()
-      tasks = case config['target']
+      loops = case config['target']
       when 'esp32'
         [ { from: "targets/#{config['target']}/Makefile.erb", to: 'Makefile' },
           { from: "targets/#{config['target']}/components/mrubyc/component.mk.erb", to: 'components/mrubyc/component.mk' },
@@ -161,10 +161,10 @@ module MrubycUtils
       when 'psoc5lp'
         [ { from: "targets/#{config['target']}/main.c.erb", to: 'main.c' } ]
       end
-      (tasks + [
+      (loops + [
         { from: "targets/#{config['target']}/gitignore.erb", to: '.gitignore' },
-        { from: 'mrblib/tasks/main_loop.rb.erb', to: "#{mruby_lib_dir}/tasks/main_loop.rb" },
-        { from: 'mrblib/tasks/sub_loop.rb.erb', to: "#{mruby_lib_dir}/tasks/sub_loop.rb" },
+        { from: 'mrblib/loops/main_loop.rb.erb', to: "#{mruby_lib_dir}/loops/main_loop.rb" },
+        { from: 'mrblib/loops/sub_loop.rb.erb', to: "#{mruby_lib_dir}/loops/sub_loop.rb" },
         { from: 'mrblib/models/operations.rb.erb', to: "#{mruby_lib_dir}/models/operations.rb" }
       ]).each do |template|
         url = sprintf("https://%s/%s/%s", 'raw.githubusercontent.com', 'hasumikin/mrubyc-utils/master/templates', template[:from])
