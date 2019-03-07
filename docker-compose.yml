@@ -3,6 +3,9 @@ compile: &defaults
   volumes:
     - .:/home/mruby/code:rw
   command: rake compile
+release:
+  <<: *defaults
+  command: rake release
 test:
   <<: *defaults
   command: rake test
