@@ -1,11 +1,11 @@
-#include "<%= mrubyc_src_dir %>/mrubyc.h"
+#include "<%= @config["mrubyc_src_dir"] %>/mrubyc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "<%= c_lib_dir %>/models/operations.c"
-#include "<%= c_lib_dir %>/loops/main_loop.c"
-#include "<%= c_lib_dir %>/loops/sub_loop.c"
+#include "<%= @config["c_lib_dir"] %>/models/operations.c"
+#include "<%= @config["c_lib_dir"] %>/loops/main_loop.c"
+#include "<%= @config["c_lib_dir"] %>/loops/sub_loop.c"
 
 #define MEMORY_SIZE (1024*40)
 static uint8_t my_memory_pool[MEMORY_SIZE];

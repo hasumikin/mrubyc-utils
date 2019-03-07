@@ -7,7 +7,7 @@ COMPONENT_DEPENDS := mrubyc
 COMPONENT_EXTRA_CLEAN = SRCFILES
 
 MRBC = mrbc
-SRCDIR = $(PROJECT_PATH)/<%= mruby_lib_dir %>
+SRCDIR = $(PROJECT_PATH)/<%= @config["mruby_lib_dir"] %>
 SRCFILES = $(wildcard $(SRCDIR)/*.rb) $(wildcard $(SRCDIR)/**/*.rb)
 OBJS = $(patsubst %.rb,%.h,$(SRCFILES))
 

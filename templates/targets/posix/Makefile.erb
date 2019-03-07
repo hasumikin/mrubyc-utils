@@ -1,8 +1,8 @@
 MRBC = mrbc
 CC = cc
-SRCDIR = <%= mruby_lib_dir %>
-OBJDIR = <%= c_lib_dir %>
-MRUBYCSRCDIR = <%= mrubyc_src_dir %>
+SRCDIR = <%= @config["mruby_lib_dir"] %>
+OBJDIR = <%= @config["c_lib_dir"] %>
+MRUBYCSRCDIR = <%= @config["mrubyc_src_dir"] %>
 SRCFILES = $(wildcard $(SRCDIR)/**/*.rb $(SRCDIR)/*.rb)
 OBJS = $(subst $(SRCDIR),$(OBJDIR),$(patsubst %.rb,%.c,$(SRCFILES)))
 TARGET = main

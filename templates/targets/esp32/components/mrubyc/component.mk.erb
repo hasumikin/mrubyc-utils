@@ -1,3 +1,3 @@
 CFLAGS = -mlongcalls -DMRBC_DEBUG
-COMPONENT_ADD_INCLUDEDIRS := <%= mrubyc_src_dir.split('/').last %>
-COMPONENT_SRCDIRS := <%= mrubyc_src_dir.split('/').last %> <%= mrubyc_src_dir.split('/').last %>/hal
+COMPONENT_ADD_INCLUDEDIRS := <%= @config["mrubyc_src_dir"].split('/').last %>
+COMPONENT_SRCDIRS := <%= @config["mrubyc_src_dir"].split('/').last %> <%= @config["mrubyc_src_dir"].split('/').last %>/hal
