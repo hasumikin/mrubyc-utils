@@ -175,17 +175,11 @@ module MrubycUtils
           raise RuntimeError
         end
         File.open(template[:to], 'w') do |f|
-          f.puts erb_result(request.body, config)
+          erb = ERB.new(request.body)
+          f.puts erb.result(MyERB.new { @config = config })
         end
         puts "INFO - saved #{template[:to]}"
       end
-    end
-
-    def erb_result(erb, hash)
-      hash.each do |key, value|
-        erb.gsub!("<%= #{key} %>", value)
-      end
-      erb
     end
 
   end

@@ -13,6 +13,7 @@ def gem_config(conf)
   conf.gem :github => 'matsumoto-r/mruby-sleep'
   conf.gem :github => 'iij/mruby-env'
   conf.gem :github => 'iij/mruby-process'
+  ENV["MRUBY_REGEXP_GEM"] = "mruby-onig-regexp"; conf.gem :github => 'jbreeden/mruby-erb'
 
   # be sure to include this gem (the cli app)
   conf.gem File.expand_path(File.dirname(__FILE__))
