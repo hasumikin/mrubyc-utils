@@ -8,7 +8,7 @@ OBJS = $(subst $(SRCDIR),$(OBJDIR),$(patsubst %.rb,%.c,$(SRCFILES)))
 TARGET = main
 
 $(TARGET): $(OBJS) main.c
-	$(CC) -m32 -DMRBC_DEBUG -o $@ $@.c $(MRUBYCSRCDIR)/*.c $(MRUBYCSRCDIR)/hal/*.c
+	$(CC) -DMRBC_DEBUG -o $@ $@.c $(MRUBYCSRCDIR)/*.c $(MRUBYCSRCDIR)/hal/*.c
 
 $(OBJDIR)/%.c: $(SRCDIR)/%.rb
 	@if [ ! -d $(dir $@) ]; \
